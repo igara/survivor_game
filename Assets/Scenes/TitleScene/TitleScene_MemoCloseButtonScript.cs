@@ -5,15 +5,13 @@ using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.SceneManagement;
 
-public class TitleScene_Stage1ButtonScript : MonoBehaviour
+public class TitleScene_MemoCloseButtonScript : MonoBehaviour
 {
   [SerializeField] private GameObject memoCanvas;
 
-  public void OnMouseDownStage1()
+  public void OnMouseDownMemoClose()
   {
-    if (memoCanvas.activeSelf) return;
-
-    Stage1Scene_SceneParameter.isTryAgain = true;
-    SceneManager.LoadScene("Scenes/Stage1Scene/Scene");
+    print("Memo close button clicked");
+    memoCanvas.SetActive(false);
   }
 }

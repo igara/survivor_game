@@ -30,8 +30,8 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   private float rotationSpeed = 5f;    // 角度変更のスムーズさ
   private float currentAngle = 0f;
 
-  // private float timeRemaining = 180f;
-  private float timeRemaining = 5f;
+  private float timeRemaining = 180f;
+  // private float timeRemaining = 5f;
   [SerializeField]
   private TMP_Text timerText;
   public bool isRunning = true;

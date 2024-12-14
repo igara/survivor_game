@@ -15,6 +15,8 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   [SerializeField]
   private Transform cameraTransform;
   [SerializeField]
+  private GameObject bigTequila;
+  [SerializeField]
   private GameObject gameOverCanvas;
   [SerializeField]
   private Transform playerTransform;
@@ -28,10 +30,12 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   private float rotationSpeed = 5f;    // 角度変更のスムーズさ
   private float currentAngle = 0f;
 
-  private float timeRemaining = 180f;
+  // private float timeRemaining = 180f;
+  private float timeRemaining = 5f;
   [SerializeField]
   private TMP_Text timerText;
-  private bool isRunning = true;
+  public bool isRunning = true;
+  public bool isDead = false;
 
   private int hp = 100;
   [SerializeField]
@@ -44,32 +48,58 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   [SerializeField]
   private Slider expSlider;
 
+  public GameObject selectCanvas;
+  public int cigaretteLevel = 0;
+
   private int bullCount = 0;
+
+  [SerializeField]
+  private AudioSource dartlikeUpAudio;
+  [SerializeField]
+  private AudioSource bgm;
 
   void Start()
   {
+    dartlikeUpAudio.Play();
+
     hpValueText.text = hp.ToString();
     hpSlider.value = hp / 100;
 
     expSlider.value = exp;
+    isRunning = false;
+
+    selectCanvas.SetActive(true);
   }
 
   void Update()
   {
-    if (isRunning)
+    if (isDead)
     {
-      if (timeRemaining > 0)
-      {
-        timeRemaining -= Time.deltaTime;
-        UpdateTimerDisplay();
-      }
-      else
-      {
-        timeRemaining = 0;
-        isRunning = false;
-        UpdateTimerDisplay();
-        OnTimerEnd(); // タイマーが終了したときの処理
-      }
+      hp = 0;
+      hpValueText.text = hp.ToString();
+      hpSlider.value = 0;
+      bgm.Stop();
+      gameOverCanvas.SetActive(true);
+      return;
+    }
+    if (!isRunning)
+    {
+      return;
+    }
+
+    if (timeRemaining > 0)
+    {
+      timeRemaining -= Time.deltaTime;
+      UpdateTimerDisplay();
+    }
+    else
+    {
+      timeRemaining = 0;
+      UpdateTimerDisplay();
+      isRunning = false;
+      isDead = true;
+      bigTequila.SetActive(true);
+      bigTequila.transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, bigTequila.transform.position.z);
     }
 
     // 仮想スティックの入力値を取得
@@ -111,11 +141,5 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     int minutes = Mathf.FloorToInt(timeRemaining / 60);
     int seconds = Mathf.FloorToInt(timeRemaining % 60);
     timerText.text = $"{minutes:D2}:{seconds:D2}";
-  }
-
-  void OnTimerEnd()
-  {
-    // タイマー終了時の処理
-    Debug.Log("タイマーが終了しました！");
   }
 }

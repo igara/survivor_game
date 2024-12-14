@@ -7,13 +7,28 @@ using UnityEngine.SceneManagement;
 
 public class TitleScene_Stage1ButtonScript : MonoBehaviour
 {
-  [SerializeField] private GameObject memoCanvas;
+  [SerializeField]
+  private GameObject memoCanvas;
+
+  [SerializeField]
+  private AudioSource dartlikeUpAudio;
 
   public void OnMouseDownStage1()
   {
-    if (memoCanvas.activeSelf) return;
+    if (memoCanvas)
+    {
+      if (memoCanvas.activeSelf) return;
+    }
 
-    Stage1Scene_SceneParameter.isTryAgain = true;
+    dartlikeUpAudio.Play();
+
+    StartCoroutine(DelayCoroutine());
+  }
+
+  private IEnumerator DelayCoroutine()
+  {
+    yield return new WaitForSeconds(1);
+
     SceneManager.LoadScene("Scenes/Stage1Scene/Scene");
   }
 }

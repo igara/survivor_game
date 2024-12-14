@@ -7,9 +7,20 @@ using UnityEngine.SceneManagement;
 
 public class Stage1Scene_TryAgainButtonScript : MonoBehaviour
 {
-    public void OnMouseDownTryAgain()
-    {
-        Stage1Scene_SceneParameter.isTryAgain = true;
-        SceneManager.LoadScene("Scenes/Stage1Scene/Scene");
-    }
+  [SerializeField]
+  private AudioSource dartlikeUpAudio;
+
+  public void OnMouseDownTryAgain()
+  {
+    dartlikeUpAudio.Play();
+
+    StartCoroutine(DelayCoroutine());
+  }
+
+  private IEnumerator DelayCoroutine()
+  {
+    yield return new WaitForSeconds(1);
+
+    SceneManager.LoadScene("Scenes/Stage1Scene/Scene");
+  }
 }

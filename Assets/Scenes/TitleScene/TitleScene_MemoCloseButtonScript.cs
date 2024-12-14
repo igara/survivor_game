@@ -7,11 +7,14 @@ using UnityEngine.SceneManagement;
 
 public class TitleScene_MemoCloseButtonScript : MonoBehaviour
 {
-  [SerializeField] private GameObject memoCanvas;
+  [SerializeField]
+  private GameObject memoCanvas;
+  [SerializeField]
+  private AudioSource dartlikeDownAudio;
 
   public void OnMouseDownMemoClose()
   {
-    print("Memo close button clicked");
     memoCanvas.SetActive(false);
+    dartlikeDownAudio.Play();
   }
 }

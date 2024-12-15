@@ -5,15 +5,14 @@ using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.SceneManagement;
 
-public class Stage1Scene_CigaretteButtonScript : MonoBehaviour
+public class Stage1Scene_ButamanButtonScript : MonoBehaviour
 {
   [SerializeField]
   private GameObject mainCanvas;
 
-
-  public void OnMouseDownCigarette()
+  public void OnMouseDownButaman()
   {
     var script = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
-    script.GetCigarette();
+    script.GetButaman();
   }
 }

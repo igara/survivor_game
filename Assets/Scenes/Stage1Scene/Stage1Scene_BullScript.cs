@@ -31,17 +31,23 @@ public class Stage1Scene_BullScript : MonoBehaviour
   private float amplitude = 0.1f; // 振幅（動きの幅）
   private float frequency = 1000f; // 周波数（速さ）
 
-  private float speed = 0.2f;
-
   private Vector3 originalPosition;
 
   private bool isShinya = false;
   private int hp = 10;
   private bool isCigaretteDamege = false;
 
+  private Stage1Scene_MainCanvasScript mainCanvasScript;
+  private AudioSource audioSource;
+
+  void Awake()
+  {
+    mainCanvasScript = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
+    audioSource = gameObject.GetComponent<AudioSource>();
+  }
+
   void Update()
   {
-    var mainCanvasScript = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
     if (mainCanvasScript.isDead)
     {
       return;
@@ -63,13 +69,12 @@ public class Stage1Scene_BullScript : MonoBehaviour
       shinya.transform.position.x,
       shinya.transform.position.y,
       originalPosition.z
-    ), Time.deltaTime * speed);
+    ), Time.deltaTime * mainCanvasScript.bullSpeed);
   }
 
   // トリガーエリアに接触し続けている間の処理
   private void OnTriggerStay2D(Collider2D collision)
   {
-    var mainCanvasScript = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
     if (mainCanvasScript.isDead)
     {
       return;
@@ -109,13 +114,13 @@ public class Stage1Scene_BullScript : MonoBehaviour
     isCigaretteDamege = false;
 
     hp--;
+    mainCanvasScript.cigaretteDamege++;
     if (hp <= 0)
     {
-      var newGameObject = Instantiate(tequila, transform.position, transform.rotation, tequilasParent.transform);
+      var newGameObject = Instantiate(tequila, transform.position, tequila.transform.rotation, tequilasParent.transform);
       newGameObject.SetActive(true);
-      var mainCanvasScript = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
-
       mainCanvasScript.bullCount++;
+      mainCanvasScript.cigaretteBullCount++;
 
       StartCoroutine(DelayCoroutineBullDestroy());
     }
@@ -124,7 +129,6 @@ public class Stage1Scene_BullScript : MonoBehaviour
   private IEnumerator DelayCoroutineBullDestroy()
   {
     gameObject.transform.localScale = new Vector3(0, 0, 0);
-    var audioSource = gameObject.GetComponent<AudioSource>();
 
     // 0から9までのランダムな整数を生成
     int randomValue = Random.Range(0, 10);

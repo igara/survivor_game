@@ -17,9 +17,15 @@ public class Stage1Scene_TequilaScript : MonoBehaviour
   private Vector3 originalPosition;
   private float speed = 10f;
 
+  private Stage1Scene_MainCanvasScript mainCanvasScript;
+
+  void Awake()
+  {
+    mainCanvasScript = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
+  }
+
   void Update()
   {
-    var mainCanvasScript = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
     if (mainCanvasScript.isDead)
     {
       return;
@@ -44,7 +50,10 @@ public class Stage1Scene_TequilaScript : MonoBehaviour
   {
     if (collision.gameObject.name == "shinya")
     {
-      var mainCanvasScript = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
+      if (isBell)
+      {
+        mainCanvasScript.bellTequilaCount++;
+      }
       mainCanvasScript.GetTequila();
       Destroy(gameObject);
     }

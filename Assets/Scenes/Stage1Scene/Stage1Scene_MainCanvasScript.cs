@@ -22,6 +22,9 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   private Transform playerTransform;
   [SerializeField]
   public GameObject shinya;
+  private SpriteRenderer shinyaSpriteRenderer;
+  private Color shinyaRedColor = new Color(1, 0, 0, 1);
+  private Color shinyaNormalColor = new Color(1, 1, 1, 1);
   [SerializeField]
   private Transform uiTransform;
 
@@ -32,6 +35,12 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
 
   private float timeRemaining = 180f;
   // private float timeRemaining = 5f;
+
+  // ブル生成間隔
+  public float bullInterval = 5f;
+  // 内部タイマー
+  private float timer = 0f;
+
   [SerializeField]
   private TMP_Text timerText;
   public bool isRunning = true;
@@ -45,9 +54,9 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   private bool isInvincible = false;
 
   private int exp = 0;
-  private int lavelValue = 0;
+  private int levelValue = 0;
   [SerializeField]
-  private TMP_Text lavelValueText;
+  private TMP_Text levelValueText;
 
   private int expMax = 2;
 
@@ -62,22 +71,22 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   [SerializeField]
   private GameObject cigarette;
   public int cigaretteLevel = 0;
-  [SerializeField]
-  private TMP_Text cigaretteLevelText;
-
   public int cigaretteDamege = 0;
+  public int cigaretteBullCount = 0;
 
+  [SerializeField]
+  public GameObject bull;
+  [SerializeField]
+  public GameObject bullsParent;
   public int bullCount = 0;
+  public float bullSpeed = 0.2f;
 
   public int tequilaCount = 0;
 
-  [SerializeField]
-  private TMP_Text butamanCountText;
   public int butamanCount = 0;
 
-  [SerializeField]
-  private TMP_Text bellCountText;
   public int bellCount = 0;
+  public int bellTequilaCount = 0;
 
   [SerializeField]
   private AudioSource dartlikeUpAudio;
@@ -85,6 +94,11 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   private AudioSource dartlikeDownAudio;
   [SerializeField]
   private AudioSource bgm;
+
+  void Awake()
+  {
+    shinyaSpriteRenderer = shinya.GetComponent<SpriteRenderer>();
+  }
 
   void Start()
   {
@@ -107,10 +121,13 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     {
       return;
     }
+    // タイマーを加算
+    var deltaTime = Time.deltaTime;
+    timer += deltaTime;
 
     if (timeRemaining > 0)
     {
-      timeRemaining -= Time.deltaTime;
+      timeRemaining -= deltaTime;
       UpdateTimerDisplay();
     }
     else
@@ -120,6 +137,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
       Dead();
       bigTequila.SetActive(true);
       bigTequila.transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, bigTequila.transform.position.z);
+      return;
     }
 
     // 仮想スティックの入力値を取得
@@ -157,6 +175,30 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
       selectCanvas.transform.position = new Vector3(cameraTransform.position.x, cameraTransform.position.y, selectCanvas.transform.position.z);
       selectCanvas.transform.rotation = cameraTransform.rotation;
     }
+
+
+    if (timer >= bullInterval)
+    {
+      SpawnRandomBull();
+      timer = 0f; // タイマーをリセット
+    }
+
+  }
+
+  void SpawnRandomBull()
+  {
+    for (int i = 0; i < bellCount + 1; i++)
+    {
+      Vector2 randomPoint = Random.insideUnitCircle * 7f;
+      Vector3 spawnPosition = new Vector3(
+        randomPoint.x + shinya.transform.position.x,
+        randomPoint.y + shinya.transform.position.y,
+        bull.transform.position.z
+      );
+
+      var newBull = Instantiate(bull, spawnPosition, shinya.transform.rotation, bullsParent.transform);
+      newBull.SetActive(true);
+    }
   }
 
   void UpdateTimerDisplay()
@@ -173,8 +215,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     hp = 0;
     hpValueText.text = hp.ToString();
     hpSlider.value = 0;
-    SpriteRenderer spriteRenderer = shinya.GetComponent<SpriteRenderer>();
-    spriteRenderer.color = new Color(1, 0, 0, 1);
+    shinyaSpriteRenderer.color = shinyaRedColor;
 
     bgm.Stop();
     gameOverCanvas.SetActive(true);
@@ -198,7 +239,6 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     cigarette.SetActive(true);
 
     cigaretteLevel++;
-    cigaretteLevelText.text = cigaretteLevel.ToString();
     var size = cigaretteLevel + 1;
     cigarette.transform.localScale = new Vector3(size, size, cigarette.transform.localScale.z);
 
@@ -211,11 +251,10 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     dartlikeDownAudio.Play();
 
     butamanCount++;
-    butamanCountText.text = butamanCount.ToString();
 
-    hp += 20;
+    hp += 50;
     hpValueText.text = hp.ToString();
-    if (hp > 100)
+    if (hp > hpSlider.maxValue)
     {
       hpSlider.maxValue = hp;
     }
@@ -230,13 +269,14 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     dartlikeDownAudio.Play();
 
     bellCount++;
-    bellCountText.text = bellCount.ToString();
 
     foreach (Transform childTransform in tequilasParent.transform)
     {
       var script = childTransform.gameObject.GetComponent<Stage1Scene_TequilaScript>();
       script.isBell = true;
     }
+    bullInterval -= 0.2f;
+    bullSpeed += 0.1f;
 
     selectCanvas.SetActive(false);
     isRunning = true;
@@ -260,14 +300,13 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
 
   private IEnumerator DelayCoroutineGetTequila()
   {
-    SpriteRenderer spriteRenderer = shinya.GetComponent<SpriteRenderer>();
-    spriteRenderer.color = new Color(1, 0, 0, 1);
+    shinyaSpriteRenderer.color = shinyaRedColor;
 
     yield return new WaitForSeconds(0.1f);
 
     if (0 < hp)
     {
-      spriteRenderer.color = new Color(1, 1, 1, 1);
+      shinyaSpriteRenderer.color = shinyaNormalColor;
     }
   }
 
@@ -278,8 +317,8 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     expMax = (int)(expMax * 1.5f);
     expSlider.maxValue = expMax;
     expSlider.value = exp;
-    lavelValue++;
-    lavelValueText.text = lavelValue.ToString();
+    levelValue++;
+    levelValueText.text = levelValue.ToString();
 
     isRunning = false;
     selectCanvas.SetActive(true);
@@ -298,8 +337,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   private IEnumerator DelayCoroutineDamageFromBull()
   {
     isInvincible = true;
-    SpriteRenderer spriteRenderer = shinya.GetComponent<SpriteRenderer>();
-    spriteRenderer.color = new Color(1, 0, 0, 1);
+    shinyaSpriteRenderer.color = shinyaRedColor;
     hp -= 1;
     hpValueText.text = hp.ToString();
     hpSlider.value = hp;
@@ -310,6 +348,6 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
 
     yield return new WaitForSeconds(0.1f);
     isInvincible = false;
-    spriteRenderer.color = new Color(1, 1, 1, 1);
+    shinyaSpriteRenderer.color = shinyaNormalColor;
   }
 }

@@ -9,11 +9,16 @@ public class Stage1Scene_CigaretteButtonScript : MonoBehaviour
 {
   [SerializeField]
   private GameObject mainCanvas;
+  private Stage1Scene_MainCanvasScript mainCanvasScript;
+
+  void Awake()
+  {
+    mainCanvasScript = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
+  }
 
 
   public void OnMouseDownCigarette()
   {
-    var script = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
-    script.GetCigarette();
+    mainCanvasScript.GetCigarette();
   }
 }

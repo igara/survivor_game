@@ -10,9 +10,15 @@ public class Stage1Scene_ButamanButtonScript : MonoBehaviour
   [SerializeField]
   private GameObject mainCanvas;
 
+  private Stage1Scene_MainCanvasScript mainCanvasScript;
+
+  void Awake()
+  {
+    mainCanvasScript = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
+  }
+
   public void OnMouseDownButaman()
   {
-    var script = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
-    script.GetButaman();
+    mainCanvasScript.GetButaman();
   }
 }

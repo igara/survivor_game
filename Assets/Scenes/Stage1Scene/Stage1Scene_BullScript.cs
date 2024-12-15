@@ -121,6 +121,7 @@ public class Stage1Scene_BullScript : MonoBehaviour
       newGameObject.SetActive(true);
       mainCanvasScript.bullCount++;
       mainCanvasScript.cigaretteBullCount++;
+      mainCanvasScript.GetExp();
 
       StartCoroutine(DelayCoroutineBullDestroy());
     }

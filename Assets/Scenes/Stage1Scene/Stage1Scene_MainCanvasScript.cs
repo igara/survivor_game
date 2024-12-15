@@ -38,6 +38,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
 
   // ブル生成間隔
   public float bullInterval = 5f;
+  private int newGenBullCount = 1;
   // 内部タイマー
   private float timer = 0f;
 
@@ -128,6 +129,13 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     if (timeRemaining > 0)
     {
       timeRemaining -= deltaTime;
+
+      if (timeRemaining % 20 == 0)
+      {
+        bullInterval -= 0.2f;
+        newGenBullCount++;
+      }
+
       UpdateTimerDisplay();
     }
     else
@@ -187,7 +195,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
 
   void SpawnRandomBull()
   {
-    for (int i = 0; i < bellCount + 1; i++)
+    for (int i = 0; i < bellCount + newGenBullCount; i++)
     {
       Vector2 randomPoint = Random.insideUnitCircle * 7f;
       Vector3 spawnPosition = new Vector3(

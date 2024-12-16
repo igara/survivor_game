@@ -12,16 +12,20 @@ public class Stage1Scene_TequilaScript : MonoBehaviour
 {
   [SerializeField]
   private GameObject mainCanvas;
+  private Transform shinyaTransform;
 
   public bool isBell = false;
   private Vector3 originalPosition;
   private float speed = 10f;
 
   private Stage1Scene_MainCanvasScript mainCanvasScript;
+  private Transform selfTransform;
 
   void Awake()
   {
     mainCanvasScript = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
+    selfTransform = transform;
+    shinyaTransform = mainCanvasScript.shinya.transform;
   }
 
   void Update()
@@ -35,12 +39,12 @@ public class Stage1Scene_TequilaScript : MonoBehaviour
       return;
     }
 
-    originalPosition = transform.position;
+    originalPosition = selfTransform.localPosition;
     if (isBell)
     {
-      transform.position = Vector3.MoveTowards(transform.position, new Vector3(
-        mainCanvasScript.shinya.transform.position.x,
-        mainCanvasScript.shinya.transform.position.y,
+      selfTransform.localPosition = Vector3.MoveTowards(selfTransform.localPosition, new Vector3(
+        shinyaTransform.localPosition.x,
+        shinyaTransform.localPosition.y,
         originalPosition.z
       ), Time.deltaTime * speed);
     }

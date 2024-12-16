@@ -121,20 +121,28 @@ public class Stage1Scene_BullScript : MonoBehaviour
       newGameObject.SetActive(true);
       mainCanvasScript.bullCount++;
       mainCanvasScript.cigaretteBullCount++;
-      mainCanvasScript.GetExp();
 
-      StartCoroutine(DelayCoroutineBullDestroy());
+      // 0から9までのランダムな整数を生成
+      bool isInBull = Random.Range(0, 10) == 10;
+      if (isInBull)
+      {
+        mainCanvasScript.inBullCount++;
+        mainCanvasScript.GetExp(50);
+      }
+      else
+      {
+        mainCanvasScript.GetExp();
+      }
+
+      StartCoroutine(DelayCoroutineBullDestroy(isInBull));
     }
   }
 
-  private IEnumerator DelayCoroutineBullDestroy()
+  private IEnumerator DelayCoroutineBullDestroy(bool isInBull)
   {
     gameObject.transform.localScale = new Vector3(0, 0, 0);
 
-    // 0から9までのランダムな整数を生成
-    int randomValue = Random.Range(0, 10);
-
-    if (randomValue == 0) // 1/10の確率で実行
+    if (isInBull)
     {
       audioSource.clip = inBullAudioSource.clip;
     }

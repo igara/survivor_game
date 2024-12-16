@@ -37183,6 +37183,7 @@ MonoBehaviour:
   bull: {fileID: 164208372}
   bullsParent: {fileID: 1141975302}
   bullCount: 0
+  inBullCount: 0
   bullSpeed: 0.2
   tequilaCount: 0
   butamanCount: 0
@@ -58817,7 +58818,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1868957097
 MonoBehaviour:
   m_ObjectHideFlags: 0

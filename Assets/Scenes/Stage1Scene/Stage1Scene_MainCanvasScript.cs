@@ -80,6 +80,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   [SerializeField]
   public GameObject bullsParent;
   public int bullCount = 0;
+  public int inBullCount = 0;
   public float bullSpeed = 0.2f;
 
   public int tequilaCount = 0;
@@ -159,7 +160,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     if (direction.magnitude >= inputThreshold)
     {
       direction.Normalize(); // ベクトルを正規化
-      playerTransform.transform.Translate(direction * speed * Time.deltaTime);
+      playerTransform.Translate(direction * speed * Time.deltaTime);
 
       // 角度計算
       float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
@@ -229,9 +230,9 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     gameOverCanvas.SetActive(true);
   }
 
-  public void GetExp()
+  public void GetExp(int expoint = 1)
   {
-    exp++;
+    exp += expoint;
     if (exp >= expMax)
     {
       LevelUp();

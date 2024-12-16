@@ -40,10 +40,13 @@ public class Stage1Scene_BullScript : MonoBehaviour
   private Stage1Scene_MainCanvasScript mainCanvasScript;
   private AudioSource audioSource;
 
+  private Transform bullTransform;
+
   void Awake()
   {
     mainCanvasScript = mainCanvas.GetComponent<Stage1Scene_MainCanvasScript>();
     audioSource = gameObject.GetComponent<AudioSource>();
+    bullTransform = transform;
   }
 
   void Update()
@@ -57,15 +60,15 @@ public class Stage1Scene_BullScript : MonoBehaviour
       return;
     }
 
-    originalPosition = transform.position;
+    originalPosition = bullTransform.position;
     if (isShinya)
     {
       // 横方向にブルブル動かす
       float shakeOffset = Mathf.Sin(Time.time * frequency) * amplitude;
-      transform.position = new Vector3(shakeOffset + originalPosition.x, 0 + originalPosition.y, originalPosition.z);
+      bullTransform.position = new Vector3(shakeOffset + originalPosition.x, 0 + originalPosition.y, originalPosition.z);
     }
 
-    transform.position = Vector3.MoveTowards(transform.position, new Vector3(
+    bullTransform.position = Vector3.MoveTowards(bullTransform.position, new Vector3(
       shinya.transform.position.x,
       shinya.transform.position.y,
       originalPosition.z
@@ -117,7 +120,7 @@ public class Stage1Scene_BullScript : MonoBehaviour
     mainCanvasScript.cigaretteDamege++;
     if (hp <= 0)
     {
-      var newGameObject = Instantiate(tequila, transform.position, tequila.transform.rotation, tequilasParent.transform);
+      var newGameObject = Instantiate(tequila, bullTransform.position, tequila.transform.rotation, tequilasParent.transform);
       newGameObject.SetActive(true);
       mainCanvasScript.bullCount++;
       mainCanvasScript.cigaretteBullCount++;
@@ -140,7 +143,7 @@ public class Stage1Scene_BullScript : MonoBehaviour
 
   private IEnumerator DelayCoroutineBullDestroy(bool isInBull)
   {
-    gameObject.transform.localScale = new Vector3(0, 0, 0);
+    bullTransform.localScale = new Vector3(0, 0, 0);
 
     if (isInBull)
     {

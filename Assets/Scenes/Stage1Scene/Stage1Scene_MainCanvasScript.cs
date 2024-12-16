@@ -18,10 +18,12 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   private GameObject bigTequila;
   [SerializeField]
   private GameObject gameOverCanvas;
+  private Transform gameOverCanvasTransform;
   [SerializeField]
   private Transform playerTransform;
   [SerializeField]
   public GameObject shinya;
+  private Transform shinyaTransform;
   private SpriteRenderer shinyaSpriteRenderer;
   private Color shinyaRedColor = new Color(1, 0, 0, 1);
   private Color shinyaNormalColor = new Color(1, 1, 1, 1);
@@ -68,6 +70,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   public GameObject tequilasParent;
 
   public GameObject selectCanvas;
+  private Transform selectCanvasTransform;
 
   [SerializeField]
   private GameObject cigarette;
@@ -79,6 +82,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   public GameObject bull;
   [SerializeField]
   public GameObject bullsParent;
+  private Transform bullsParentTransform;
   public int bullCount = 0;
   public int inBullCount = 0;
   public float bullSpeed = 0.2f;
@@ -100,6 +104,10 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   void Awake()
   {
     shinyaSpriteRenderer = shinya.GetComponent<SpriteRenderer>();
+    bullsParentTransform = bullsParent.transform;
+    gameOverCanvasTransform = gameOverCanvas.transform;
+    selectCanvasTransform = selectCanvas.transform;
+    shinyaTransform = shinya.transform;
   }
 
   void Start()
@@ -167,22 +175,22 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
       targetAngle += 90f; // 右回りに90度加算して調整
       // 角度をスムーズに変更
       currentAngle = Mathf.LerpAngle(currentAngle, targetAngle, rotationSpeed * Time.deltaTime);
-      shinya.transform.rotation = Quaternion.Euler(0, 0, currentAngle);
+      shinyaTransform.rotation = Quaternion.Euler(0, 0, currentAngle);
     }
 
     // カメラをプレイヤーの位置に追従させる
     if (cameraTransform != null)
     {
-      cameraTransform.position = new Vector3(playerTransform.transform.position.x, playerTransform.transform.position.y, cameraTransform.position.z);
+      cameraTransform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, cameraTransform.position.z);
 
       uiTransform.position = new Vector3(cameraTransform.position.x, cameraTransform.position.y, uiTransform.position.z);
       uiTransform.rotation = cameraTransform.rotation;
 
-      gameOverCanvas.transform.position = new Vector3(cameraTransform.position.x, cameraTransform.position.y, gameOverCanvas.transform.position.z);
-      gameOverCanvas.transform.rotation = cameraTransform.rotation;
+      gameOverCanvasTransform.position = new Vector3(cameraTransform.position.x, cameraTransform.position.y, gameOverCanvasTransform.position.z);
+      gameOverCanvasTransform.rotation = cameraTransform.rotation;
 
-      selectCanvas.transform.position = new Vector3(cameraTransform.position.x, cameraTransform.position.y, selectCanvas.transform.position.z);
-      selectCanvas.transform.rotation = cameraTransform.rotation;
+      selectCanvasTransform.position = new Vector3(cameraTransform.position.x, cameraTransform.position.y, selectCanvasTransform.position.z);
+      selectCanvasTransform.rotation = cameraTransform.rotation;
     }
 
 
@@ -196,16 +204,21 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
 
   void SpawnRandomBull()
   {
+    var bullCount = bullsParentTransform.childCount;
+    if (bullCount >= 20)
+    {
+      return;
+    }
     for (int i = 0; i < bellCount + newGenBullCount; i++)
     {
       Vector2 randomPoint = Random.insideUnitCircle * 7f;
       Vector3 spawnPosition = new Vector3(
-        randomPoint.x + shinya.transform.position.x,
-        randomPoint.y + shinya.transform.position.y,
+        randomPoint.x + shinyaTransform.position.x,
+        randomPoint.y + shinyaTransform.position.y,
         bull.transform.position.z
       );
 
-      var newBull = Instantiate(bull, spawnPosition, shinya.transform.rotation, bullsParent.transform);
+      var newBull = Instantiate(bull, spawnPosition, shinyaTransform.rotation, bullsParentTransform);
       newBull.SetActive(true);
     }
   }
@@ -248,7 +261,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     cigarette.SetActive(true);
 
     cigaretteLevel++;
-    var size = cigaretteLevel + 1;
+    var size = cigaretteLevel * 2;
     cigarette.transform.localScale = new Vector3(size, size, cigarette.transform.localScale.z);
 
     selectCanvas.SetActive(false);

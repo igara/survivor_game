@@ -16,6 +16,8 @@ public class Stage1Scene_SelectCanvasScript : MonoBehaviour
 
   [SerializeField]
   private TMP_Text cigaretteLevelText;
+  [SerializeField]
+  private TMP_Text dartLevelText;
 
   [SerializeField]
   private TMP_Text bellCountText;
@@ -31,6 +33,7 @@ public class Stage1Scene_SelectCanvasScript : MonoBehaviour
   private void OnEnable()
   {
     cigaretteLevelText.text = mainCanvasScript.cigaretteLevel.ToString();
+    dartLevelText.text = mainCanvasScript.dartLevel.ToString();
     bellCountText.text = mainCanvasScript.bellCount.ToString();
     butamanCountText.text = mainCanvasScript.butamanCount.ToString();
   }

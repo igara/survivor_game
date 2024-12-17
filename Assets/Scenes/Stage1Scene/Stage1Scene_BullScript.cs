@@ -75,6 +75,23 @@ public class Stage1Scene_BullScript : MonoBehaviour
     ), Time.deltaTime * mainCanvasScript.bullSpeed);
   }
 
+  private void OnTriggerEnter2D(Collider2D collision)
+  {
+    if (mainCanvasScript.isDead)
+    {
+      return;
+    }
+    if (!mainCanvasScript.isRunning)
+    {
+      return;
+    }
+
+    if (collision.gameObject.name == "bull(Clone)")
+    {
+      BullDamageFromDart(collision);
+    }
+  }
+
   // トリガーエリアに接触し続けている間の処理
   private void OnTriggerStay2D(Collider2D collision)
   {
@@ -100,7 +117,7 @@ public class Stage1Scene_BullScript : MonoBehaviour
       {
         return;
       }
-      StartCoroutine(DelayCoroutineBullDamage(collision));
+      StartCoroutine(DelayCoroutineBullDamageFromCigarette(collision));
     }
   }
 
@@ -110,7 +127,32 @@ public class Stage1Scene_BullScript : MonoBehaviour
     isShinya = false;
   }
 
-  private IEnumerator DelayCoroutineBullDamage(Collider2D collision)
+  void BullDamageFromDart(Collider2D collision)
+  {
+    mainCanvasScript.dartDamege += hp;
+
+    var newGameObject = Instantiate(tequila, bullTransform.position, tequila.transform.rotation, tequilasParent.transform);
+    newGameObject.SetActive(true);
+    mainCanvasScript.bullCount++;
+    mainCanvasScript.dartBullCount++;
+
+    // ランダムな整数を生成
+    bool isInBull = Random.Range(0, 5) == 5;
+    if (isInBull)
+    {
+      mainCanvasScript.inBullCount++;
+      mainCanvasScript.dartInBullCount++;
+      mainCanvasScript.GetExp(50);
+    }
+    else
+    {
+      mainCanvasScript.GetExp();
+    }
+
+    StartCoroutine(DelayCoroutineBullDestroy(isInBull));
+  }
+
+  private IEnumerator DelayCoroutineBullDamageFromCigarette(Collider2D collision)
   {
     isCigaretteDamege = true;
     yield return new WaitForSeconds(1);
@@ -125,11 +167,12 @@ public class Stage1Scene_BullScript : MonoBehaviour
       mainCanvasScript.bullCount++;
       mainCanvasScript.cigaretteBullCount++;
 
-      // 0から9までのランダムな整数を生成
-      bool isInBull = Random.Range(0, 10) == 10;
+      // ランダムな整数を生成
+      bool isInBull = Random.Range(0, 5) == 5;
       if (isInBull)
       {
         mainCanvasScript.inBullCount++;
+        mainCanvasScript.cigaretteInBullCount++;
         mainCanvasScript.GetExp(50);
       }
       else

@@ -42,12 +42,13 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   public float bullInterval = 5f;
   private int newGenBullCount = 1;
   // 内部タイマー
-  private float timer = 0f;
+  private float bullTimer = 0f;
 
   [SerializeField]
   private TMP_Text timerText;
   public bool isRunning = true;
   public bool isDead = false;
+  public bool isFullTime = false;
 
   private int hp = 100;
   [SerializeField]
@@ -77,6 +78,17 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
   public int cigaretteLevel = 0;
   public int cigaretteDamege = 0;
   public int cigaretteBullCount = 0;
+  public int cigaretteInBullCount = 0;
+
+  [SerializeField]
+  public GameObject dartsParent;
+  private Transform dartsParentTransform;
+  [SerializeField]
+  private GameObject dart;
+  public int dartLevel = 0;
+  public int dartDamege = 0;
+  public int dartBullCount = 0;
+  public int dartInBullCount = 0;
 
   [SerializeField]
   public GameObject bull;
@@ -108,6 +120,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     gameOverCanvasTransform = gameOverCanvas.transform;
     selectCanvasTransform = selectCanvas.transform;
     shinyaTransform = shinya.transform;
+    dartsParentTransform = dartsParent.transform;
   }
 
   void Start()
@@ -117,6 +130,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     hpSlider.value = hp;
 
     cigarette.SetActive(false);
+    dart.SetActive(false);
 
     LevelUp();
   }
@@ -133,24 +147,27 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     }
     // タイマーを加算
     var deltaTime = Time.deltaTime;
-    timer += deltaTime;
+    bullTimer += deltaTime;
+
+    var minutes = getMinutesFromTimeRemaining();
+    var seconds = getSecondsFromTimeRemaining();
 
     if (timeRemaining > 0)
     {
       timeRemaining -= deltaTime;
 
-      if (timeRemaining % 20 == 0)
+      if (seconds % 20 == 0)
       {
         bullInterval -= 0.2f;
         newGenBullCount++;
       }
 
-      UpdateTimerDisplay();
+      UpdateTimerDisplay(minutes, seconds);
     }
     else
     {
       timeRemaining = 0;
-      UpdateTimerDisplay();
+      timerText.text = "00:00";
       Dead();
       bigTequila.SetActive(true);
       bigTequila.transform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, bigTequila.transform.position.z);
@@ -194,23 +211,40 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     }
 
 
-    if (timer >= bullInterval)
+    if (bullTimer >= bullInterval)
     {
       SpawnRandomBull();
-      timer = 0f; // タイマーをリセット
+      bullTimer = 0f; // タイマーをリセット
     }
 
+    if (dartLevel > 0)
+    {
+      var dartCount = dartsParentTransform.childCount;
+      if (dartCount >= dartLevel)
+      {
+        return;
+      }
+
+      if (seconds % 1 == 0)
+      {
+        var newRotation = Quaternion.Euler(shinyaTransform.rotation.eulerAngles.x, shinyaTransform.rotation.eulerAngles.y, shinyaTransform.rotation.eulerAngles.z + 90);
+        var newPosition = new Vector3(shinyaTransform.position.x, shinyaTransform.position.y, dart.transform.position.z);
+        var newDart = Instantiate(dart, newPosition, newRotation, dartsParentTransform);
+        newDart.SetActive(true);
+      }
+    }
   }
 
   void SpawnRandomBull()
   {
-    var bullCount = bullsParentTransform.childCount;
-    if (bullCount >= 20)
+    var genBullCount = bellCount + newGenBullCount;
+    for (int i = 0; i < genBullCount; i++)
     {
-      return;
-    }
-    for (int i = 0; i < bellCount + newGenBullCount; i++)
-    {
+      var bullCount = bullsParentTransform.childCount;
+      if (bullCount >= 24)
+      {
+        break;
+      }
       Vector2 randomPoint = Random.insideUnitCircle * 7f;
       Vector3 spawnPosition = new Vector3(
         randomPoint.x + shinyaTransform.position.x,
@@ -223,10 +257,18 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     }
   }
 
-  void UpdateTimerDisplay()
+  int getMinutesFromTimeRemaining()
   {
-    int minutes = Mathf.FloorToInt(timeRemaining / 60);
-    int seconds = Mathf.FloorToInt(timeRemaining % 60);
+    return Mathf.FloorToInt(timeRemaining / 60);
+  }
+
+  int getSecondsFromTimeRemaining()
+  {
+    return Mathf.FloorToInt(timeRemaining % 60);
+  }
+
+  void UpdateTimerDisplay(int minutes, int seconds)
+  {
     timerText.text = $"{minutes:D2}:{seconds:D2}";
   }
 
@@ -263,6 +305,16 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     cigaretteLevel++;
     var size = cigaretteLevel * 2;
     cigarette.transform.localScale = new Vector3(size, size, cigarette.transform.localScale.z);
+
+    selectCanvas.SetActive(false);
+    isRunning = true;
+  }
+
+  public void GetDart()
+  {
+    dartlikeDownAudio.Play();
+
+    dartLevel++;
 
     selectCanvas.SetActive(false);
     isRunning = true;

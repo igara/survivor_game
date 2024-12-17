@@ -41,8 +41,12 @@ public class Stage1Scene_GameOverCanvasScript : MonoBehaviour
   {
     cigaretteText.text = $@"取得数: {mainCanvasScript.cigaretteLevel.ToString()}
 ダメージ数: {mainCanvasScript.cigaretteDamege.ToString()}
-ブル数: {mainCanvasScript.cigaretteBullCount.ToString()}";
-    // dartText.text = mainCanvasScript.bellCount.ToString();
+ブル数: {mainCanvasScript.cigaretteBullCount.ToString()}
+インブル数: {mainCanvasScript.cigaretteInBullCount.ToString()}";
+    dartText.text = $@"取得数: {mainCanvasScript.dartLevel.ToString()}
+ダメージ数: {mainCanvasScript.dartDamege.ToString()}
+ブル数: {mainCanvasScript.dartBullCount.ToString()}
+インブル数: {mainCanvasScript.dartInBullCount.ToString()}";
     bullText.text = $@"撃破数: {mainCanvasScript.bullCount.ToString()}
 インブル数: {mainCanvasScript.inBullCount.ToString()}";
     tequilaText.text = $@"取得数: {mainCanvasScript.tequilaCount.ToString()}";

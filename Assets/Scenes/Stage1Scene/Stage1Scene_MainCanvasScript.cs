@@ -303,7 +303,7 @@ public class Stage1Scene_MainCanvasScript : MonoBehaviour
     cigarette.SetActive(true);
 
     cigaretteLevel++;
-    var size = cigaretteLevel * 2;
+    var size = (cigaretteLevel + 1) * 2;
     cigarette.transform.localScale = new Vector3(size, size, cigarette.transform.localScale.z);
 
     selectCanvas.SetActive(false);

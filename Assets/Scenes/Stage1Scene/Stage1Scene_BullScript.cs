@@ -137,7 +137,7 @@ public class Stage1Scene_BullScript : MonoBehaviour
     mainCanvasScript.dartBullCount++;
 
     // ランダムな整数を生成
-    bool isInBull = Random.Range(0, 5) == 5;
+    bool isInBull = Random.Range(0, 3) == 2;
     if (isInBull)
     {
       mainCanvasScript.inBullCount++;
@@ -149,7 +149,7 @@ public class Stage1Scene_BullScript : MonoBehaviour
       mainCanvasScript.GetExp();
     }
 
-    StartCoroutine(DelayCoroutineBullDestroy(isInBull));
+    BullDestroy(isInBull);
   }
 
   private IEnumerator DelayCoroutineBullDamageFromCigarette(Collider2D collision)
@@ -168,7 +168,7 @@ public class Stage1Scene_BullScript : MonoBehaviour
       mainCanvasScript.cigaretteBullCount++;
 
       // ランダムな整数を生成
-      bool isInBull = Random.Range(0, 5) == 5;
+      bool isInBull = Random.Range(0, 5) == 4;
       if (isInBull)
       {
         mainCanvasScript.inBullCount++;
@@ -180,11 +180,11 @@ public class Stage1Scene_BullScript : MonoBehaviour
         mainCanvasScript.GetExp();
       }
 
-      StartCoroutine(DelayCoroutineBullDestroy(isInBull));
+      BullDestroy(isInBull);
     }
   }
 
-  private IEnumerator DelayCoroutineBullDestroy(bool isInBull)
+  private void BullDestroy(bool isInBull)
   {
     bullTransform.localScale = new Vector3(0, 0, 0);
 
@@ -199,7 +199,6 @@ public class Stage1Scene_BullScript : MonoBehaviour
 
     audioSource.Play();
 
-    yield return new WaitForSeconds(1);
     Destroy(gameObject);
   }
 }
